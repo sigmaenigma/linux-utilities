@@ -1,7 +1,7 @@
 # linux_utilities
 A place to put the scripts I google for a lot
 
-# SSH Passwordless Access
+# SSH Passwordless Access (ssh_passwordless.sh)
 Couple scripts in here that allow a user to ssh into a box without their password by enabling a private key authentication method
 
 # Common Packages (common_packages.py)
