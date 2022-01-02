@@ -17,7 +17,7 @@ Reference Site: https://www.site24x7.com/help/admin/adding-a-monitor/configuring
 1. Comment the line ```agentAddress udp:127.0.0.1:161``` by adding a hash ( # ) in front of it so the line appears like this:
 ### ```#agentAddress udp:127.0.0.1:161```
 2. Uncomment or remove the hash ( # ) from this line ```agentAddress #udp:161,udp6:[::1]:161``` so it appears like this:
-```agentAddress udp:161,udp6:[::1]:161```
+### ```agentAddress udp:161,udp6:[::1]:161```
 3. Restart the snmpd service ```sudo systemctl restart snmpd```
 4. Add the device to LibreNMS
 5. Wait 5-20 minutes to allow LibreNMS to collect some data about the device
