@@ -1,9 +1,9 @@
-# Took these instructions from Mike at https://youtu.be/jxiDgJBFV5E
-# These are available through this docs link as referenced in the video
-# https://docs.google.com/document/d/1oVX70VXhAidAlaX0CmMb9WiqHFbhTLGOSasVbmuBX1I/edit
+# If you need to install SNMP on a Raspberry Pi, and have the device info and Raspberry Pi logo appear in LibreNMS, these instructions get the job done. 
 
+## Source: Took these instructions from Mike at https://youtu.be/jxiDgJBFV5E. These are available through this docs link as referenced in the video https://docs.google.com/document/d/1oVX70VXhAidAlaX0CmMb9WiqHFbhTLGOSasVbmuBX1I/edit
+---
 ### Reference the distro.sh file and/or the snmpd.conf with the info below
-
+---
 # Install SNMP Daemon
 Reference Site: https://www.site24x7.com/help/admin/adding-a-monitor/configuring-snmp-linux.html 
 # Install the SNMP Daemon
