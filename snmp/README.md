@@ -21,7 +21,7 @@ Reference Site: https://www.site24x7.com/help/admin/adding-a-monitor/configuring
 3. Restart the snmpd service ```sudo systemctl restart snmpd```
 4. Add the device to LibreNMS
 5. Wait 5-20 minutes to allow LibreNMS to collect some data about the device
-6. DONE! Don’t forget to “Like” this video!
+6. DONE! Don’t forget to “Like” Mike's video! https://youtu.be/jxiDgJBFV5E
 
 # OPTIONAL:  If you’d like the Raspberry Pi logo to display correctly, complete these steps.
 
