@@ -2,7 +2,7 @@ import os
 import subprocess
 
 # Directory to scan
-DIR = "/path/to/your/folder"
+DIR = "/path/to/folder"
 
 # Log file
 LOGFILE = "corruption_log.txt"
@@ -21,7 +21,7 @@ def check_corruption(file):
             "docker", "run", "--rm", "-v",
             f"{os.path.abspath(DIR)}:/videos",
             "linuxserver/ffmpeg:latest",
-            "-v", "error", "-i", f"/videos/{os.path.basename(file)}", "-f", "null", "-"
+            "-v", "error", "-i", f"/videos/{os.path.relpath(file, DIR)}", "-f", "null", "-"
         ],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE
@@ -33,9 +33,10 @@ def check_corruption(file):
             log_file.write(f"No corruption detected in: {file}\n")
 
 # Iterate through the directory
-for format in FORMATS:
-    for file in os.listdir(DIR):
-        if file.endswith(f".{format}"):
-            check_corruption(os.path.join(DIR, file))
+for root, _, files in os.walk(DIR):
+    for file in files:
+        if any(file.endswith(f".{format}") for format in FORMATS):
+            print(f'Filename: {file}')
+            check_corruption(os.path.join(root, file))
 
 print(f"Corruption check completed. Results are logged in {LOGFILE}.")
