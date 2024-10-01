@@ -14,10 +14,15 @@ FORMATS = ["mp4", "mkv", "avi", "mov", "flv"]
 with open(LOGFILE, "w") as log_file:
     log_file.write("")
 
-# Function to check for corruption
+# Function to check for corruption using Docker
 def check_corruption(file):
     result = subprocess.run(
-        ["ffmpeg", "-v", "error", "-i", file, "-f", "null", "-"],
+        [
+            "docker", "run", "--rm", "-v",
+            f"{os.path.abspath(DIR)}:/videos",
+            "linuxserver/ffmpeg:latest",
+            "-v", "error", "-i", f"/videos/{os.path.basename(file)}", "-f", "null", "-"
+        ],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE
     )
