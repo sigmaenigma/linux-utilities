@@ -21,7 +21,7 @@ def check_corruption(file):
             "docker", "run", "--rm", "-v",
             f"{os.path.abspath(DIR)}:/videos",
             "linuxserver/ffmpeg:latest",
-            "-v", "error", "-i", f"/videos/{os.path.relpath(file, DIR)}", "-f", "null", "-"
+            "-v", "info", "-i", f"/videos/{os.path.relpath(file, DIR)}", "-f", "null", "-"
         ],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE
