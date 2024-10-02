@@ -1,61 +1,48 @@
-package main
+use std::fs::{self, File};
+use std::io::{self, Write};
+use std::process::Command;
+use std::path::Path;
 
-import (
-    "fmt"
-    "io/ioutil"
-    "log"
-    "os"
-    "os/exec"
-    "path/filepath"
-    "strings"
-)
+const DIR: &str = "/path/to/folder";
+const LOGFILE: &str = "corruption_log.txt";
+const FORMATS: [&str; 5] = ["mp4", "mkv", "avi", "mov", "flv"];
 
-const (
-    dir     = "/path/to/folder"
-    logFile = "corruption_log.txt"
-)
+fn main() -> io::Result<()> {
+    let mut log_file = File::create(LOGFILE)?;
 
-var formats = []string{"mp4", "mkv", "avi", "mov", "flv"}
-
-func main() {
-    f, err := os.Create(logFile)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer f.Close()
-
-    files, err := ioutil.ReadDir(dir)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    for _, file := range files {
-        if !file.IsDir() && isSupportedFormat(file.Name()) {
-            fmt.Fprintf(f, "Filename: %s\n", file.Name())
-            checkCorruption(file.Name(), f)
+    for entry in fs::read_dir(DIR)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_file() && is_supported_format(&path) {
+            let filename = path.file_name().unwrap().to_str().unwrap();
+            writeln!(log_file, "Filename: {}", filename)?;
+            check_corruption(filename, &mut log_file)?;
         }
     }
 
-    fmt.Fprintf(f, "Corruption check completed. Results are logged in %s.\n", logFile)
+    writeln!(log_file, "Corruption check completed. Results are logged in {}", LOGFILE)?;
+    Ok(())
 }
 
-func isSupportedFormat(filename string) bool {
-    ext := strings.ToLower(filepath.Ext(filename))
-    for _, format := range formats {
-        if ext == "."+format {
-            return true
-        }
-    }
-    return false
-}
-
-func checkCorruption(file string, f *os.File) {
-    cmd := exec.Command("docker", "run", "--rm", "-v", fmt.Sprintf("%s:/videos", dir), "linuxserver/ffmpeg:latest", "-v", "info", "-i", fmt.Sprintf("/videos/%s", file), "-f", "null", "-")
-    output, err := cmd.CombinedOutput()
-    if err != nil {
-        fmt.Fprintf(f, "Corruption detected in: %s\n", file)
-        fmt.Fprintf(f, "Error message: %s\n", string(output))
+fn is_supported_format(path: &Path) -> bool {
+    if let Some(ext) = path.extension() {
+        FORMATS.contains(&ext.to_str().unwrap())
     } else {
-        fmt.Fprintf(f, "No corruption detected in: %s\n", file)
+        false
     }
+}
+
+fn check_corruption(file: &str, log_file: &mut File) -> io::Result<()> {
+    let output = Command::new("docker")
+        .args(&["run", "--rm", "-v", &format!("{}:/videos", DIR), "linuxserver/ffmpeg:latest", "-v", "info", "-i", &format!("/videos/{}", file), "-f", "null", "-"])
+        .output()?;
+
+    if !output.status.success() {
+        writeln!(log_file, "Corruption detected in: {}", file)?;
+        writeln!(log_file, "Error message: {}", String::from_utf8_lossy(&output.stderr))?;
+    } else {
+        writeln!(log_file, "No corruption detected in: {}", file)?;
+    }
+
+    Ok(())
 }
