@@ -28,7 +28,9 @@ def check_corruption(file):
     )
     with open(LOGFILE, "a") as log_file:
         if result.returncode != 0:
+            error_message = result.stderr.decode('utf-8')
             log_file.write(f"Corruption detected in: {file}\n")
+            log_file.write(f"Error message: {error_message}\n")
         else:
             log_file.write(f"No corruption detected in: {file}\n")
 
