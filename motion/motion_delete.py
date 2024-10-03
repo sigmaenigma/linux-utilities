@@ -1,27 +1,36 @@
 import os
+import subprocess
+from datetime import datetime, timedelta
 
-"""
-This script checks a folder and deletes all files in that folder if they match a specific 
-file type. Additionally, an age check is implemented only delete desired files.
-"""
-
-# Type in FileTypes you wish to delete
-snapshot_filetype = '*.mkv'
-timelapse_filetype = '*.mpg'
-
-# Number of days to check back (e.g. if 7, it will delete files greater than or equal to 7 days old)
-snapshot_age = '7'
-timelapse_age = '7'
+# Define file types and their respective age limits
+file_types = {
+    '*.mkv': 7,
+    '*.mpg': 7
+}
 
 default_motion_directory = '/var/lib/motion/'
 
-def run_delete():
-	try:
-		print(f'Running...\n')
-		os.system(f"find {default_motion_directory} -type f -mtime +{snapshot_age} -name {snapshot_filetype} -delete")
-		os.system(f"find {default_motion_directory} -type f -mtime +{timelapse_age} -name {timelapse_filetype} -delete")
-		print(f'Complete...\n')
-	except Exception as e:
-		print(f'Something bad happened: {e}')
+def delete_old_files(directory, file_type, age_limit):
+    now = datetime.now()
+    cutoff = now - timedelta(days=age_limit)
+    
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(file_type.split('.')[-1]):
+                file_path = os.path.join(root, file)
+                file_mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
+                if file_mtime < cutoff:
+                    try:
+                        os.remove(file_path)
+                        print(f'Deleted {file_path}')
+                    except Exception as e:
+                        print(f'Error deleting {file_path}: {e}')
 
-run_delete()
+def run_delete():
+    print('Running...\n')
+    for file_type, age_limit in file_types.items():
+        delete_old_files(default_motion_directory, file_type, age_limit)
+    print('Complete...\n')
+
+if __name__ == "__main__":
+    run_delete()
