@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# v1.0
 echo "Starting system update..."
 
 # Update package lists
