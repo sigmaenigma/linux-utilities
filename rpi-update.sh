@@ -10,11 +10,11 @@ echo "Packages that will be upgraded:"
 sudo apt list --upgradeable
 
 # Perform upgrade
-sudo apt upgrade -y
+sudo apt upgrade
 
 # Remove orphaned packages
 echo "Removing orphaned packages..."
-sudo apt autoremove -y
+sudo apt autoremove
 
 # Clean package cache
 echo "Cleaning package cache..."
